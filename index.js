@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const isUrlIndexedInGoogle = require("./checkGoogleIndex.js");
 
 const urlToCheck = "https://ng-menuiserie.fr/";
 const sitemapUrl = "https://ng-menuiserie.fr/page-sitemap.xml"; // Replace with the correct sitemap URL
@@ -70,6 +71,20 @@ async function checkIndexStatus(url, sitemapLinks, searchLinks) {
       nonIndexedLinks.push(link);
     }
   }
+
+  nonIndexedLinks.forEach((l, i) => {
+    setTimeout(() => {
+      const linkChecked = isUrlIndexedInGoogle(l);
+      if (!linkChecked) {
+        const link = l;
+        const updatedIndexedLink = nonIndexedLinks.filter((l) => l !== link);
+        console.log("====================================");
+        console.log(updatedIndexedLink);
+        console.log("====================================");
+        return updatedIndexedLink;
+      }
+    }, Math.floor(Math.random() * (7000 - 3000) + 3000));
+  });
 
   return { indexedLinks, nonIndexedLinks };
 }
